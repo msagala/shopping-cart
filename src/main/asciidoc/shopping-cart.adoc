@@ -10,60 +10,62 @@ Matthew Sagala;
 [introduction]
 = Introduction
 
-SPI Microservice is a backend system that process the flow of data from EQ Interface to Third Party Service providers.
+Shopping cart service is a backend system that process the creation of cart to add, update or delete items on it.
 [getting-started]
 = Getting started
 
 
 [getting-started-running-the-service]
 == Running the service
-SPI Microservice is written using http://projects.spring.io/spring-boot[Spring Boot] which
+Shopping cart service is written using http://projects.spring.io/spring-boot[Spring Boot] which
 makes it easy to get it up and running so that you can start exploring the REST API.
 
 The first step is to clone the Git repository:
 
 [source,bash]
 ----
-$ git clone git@bitbucket.org:ascendcorp/ami-ph-eq-spi
+$ git clone https://github.com/msagala/shopping-cart
 ----
 
 Once the clone is complete, you're ready to get the service up and running:
 
 [source,bash]
 ----
-$ cd ami-ph-eq-spi
+$ cd shopping-cart
 $ mvn clean package
 $ java -jar target/*.jar
 ----
 
-= Aggregators Services
+= Shopping Cart Services
 
-== Billspay
+=== Add items to new cart API
+It is use to add items in the cart. We can add items even without an existing cart to use, it will initially create a cart if your cart_id field is null.
 
-=== Billspay Bayadcenter
-Post-Payment Request
-include::bayadcenter-postpayment/curl-request.adoc[]
-Post-Payment Response
-include::bayadcenter-postpayment/http-response.adoc[]
+Success Request
+include::{snippets}/add-item-in-new-cart/http-request.adoc[]
+Success Response
+include::{snippets}/add-item-in-new-cart/http-response.adoc[]
 
-=== Billspay ECPAY
-Pre-Order Request
-include::ecpay-preorder/curl-request.adoc[]
-Pre-Order Response
-include::ecpay-preorder/http-response.adoc[]
+=== Add items to an existing cart API
+It is a use case where you will add an item to an existing cart, you need to input a cart_id to use that cart to add the new item or update the quantity of an existing item. If no cart found, it will return an error "Cart not found!".
 
-Post-Payment Request
-include::ecpay-postpayment/curl-request.adoc[]
-Post-Payment Response
-include::ecpay-postpayment/http-response.adoc[]
+Success Request
+include::{snippets}/add-item-in-existing-cart/http-request.adoc[]
+Success Response
+include::{snippets}/add-item-in-existing-cart/http-response.adoc[]
 
-=== Billspay Paynamics
-Pre-Order Request
-include::paynamics-preorder/curl-request.adoc[]
-Pre-Order Response
-include::paynamics-preorder/http-response.adoc[]
+=== Update item in the cart
+It is used to update the items inside the cart. The success response will traverse all the items and the updated one in the cart.
 
-Post-Payment Request
-include::paynamics-postpayment/curl-request.adoc[]
-Post-Payment Response
-include::paynamics-postpayment/http-response.adoc[]
+Success Request
+include::{snippets}/update-item-in-cart/http-request.adoc[]
+Success Response
+include::{snippets}/update-item-in-cart/http-response.adoc[]
+
+=== Remove item in the cart
+It is used to remove an item in the cart using cart_id and item_id. If no cart found, it will respond "Cart not found!" and if no item found, it will response "Item not found!". The success response will traverse the remaining items in the cart.
+
+Success Request
+include::{snippets}/delete-item-in-cart/http-request.adoc[]
+Success Response
+include::{snippets}/delete-item-in-cart/http-response.adoc[]
