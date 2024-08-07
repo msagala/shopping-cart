@@ -14,7 +14,9 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain getSecurityFilter(HttpSecurity httpSecurity) throws Exception {
         httpSecurity.csrf(c -> c.disable());
-        httpSecurity.authorizeHttpRequests(request -> request.anyRequest().authenticated());
+        httpSecurity.headers().frameOptions().disable();
+        httpSecurity.authorizeHttpRequests(request -> request
+                .anyRequest().authenticated());
         httpSecurity.formLogin(Customizer.withDefaults());
         httpSecurity.httpBasic(Customizer.withDefaults());
         return httpSecurity.build();
