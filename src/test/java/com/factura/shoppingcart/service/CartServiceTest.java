@@ -1,7 +1,9 @@
 package com.factura.shoppingcart.service;
 
 import com.factura.shoppingcart.exception.CartNotFoundException;
+import com.factura.shoppingcart.exception.ItemNotFoundException;
 import com.factura.shoppingcart.model.dto.CartDto;
+import com.factura.shoppingcart.model.dto.ItemDto;
 import com.factura.shoppingcart.model.entity.CartEntity;
 import com.factura.shoppingcart.model.entity.ItemEntity;
 import com.factura.shoppingcart.repository.CartRepository;
@@ -36,7 +38,6 @@ public class CartServiceTest {
 
     @Test
     public void getByIdShouldThrowCartNotFoundException() throws CartNotFoundException {
-        CartEntity mockCartEntity = null;
         Mockito.when(cartRepository.findById(Mockito.anyLong()))
                 .thenReturn(Optional.ofNullable(null));
         Assertions.assertThrows(CartNotFoundException.class,() -> cartService.getCartItemsById(2L));
@@ -57,8 +58,51 @@ public class CartServiceTest {
     }
 
     @Test
-    public void addItemWithoutCartShouldCreateCart() {
+    public void addItemWithoutCartShouldCreateCart() throws CartNotFoundException {
+        CartEntity mockCartEntity = new CartEntity();
+        mockCartEntity.setId(1L);
+        Set<ItemEntity> itemEntitySet = new HashSet<>();
+        itemEntitySet.add(new ItemEntity(1L,"P1002","IPhone","Cellphone",1,new BigDecimal("300.0"),null));
+        mockCartEntity.setItems(itemEntitySet);
+        Mockito.when(cartRepository.save(Mockito.any()))
+                .thenReturn(mockCartEntity);
+        CartDto cartDto = cartService.addItemToCart(null, new ItemDto(1L,"P1002","IPhone","Cellphone",1,new BigDecimal("300.0")));
+        Assertions.assertEquals(cartDto.getId(),1L);
+        Assertions.assertEquals(cartDto.getItems().size(),1);
+    }
 
+    @Test
+    public void updateItemInCart() throws CartNotFoundException {
+        CartEntity mockCartEntity = new CartEntity();
+        mockCartEntity.setId(1L);
+        Set<ItemEntity> itemEntitySet = new HashSet<>();
+        itemEntitySet.add(new ItemEntity(1L,"P1002","IPhone","Cellphone",1,new BigDecimal("300.0"),new BigDecimal("300.0")));
+        mockCartEntity.setItems(itemEntitySet);
+        mockCartEntity.setTotalPrice(new BigDecimal("300.0"));
+        Mockito.when(cartRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(mockCartEntity));
+        Mockito.when(cartRepository.save(Mockito.any()))
+                .thenReturn(mockCartEntity);
+        CartDto cartDto = cartService.updateItemToCart(1L, new ItemDto(1L,"P1002","IPhone","Cellphone",1,new BigDecimal("300.0")));
+        Assertions.assertEquals(cartDto.getId(),1L);
+        Assertions.assertEquals(cartDto.getItems().size(),1);
+    }
+
+    @Test
+    public void deleteItemInCart() throws CartNotFoundException, ItemNotFoundException {
+        CartEntity mockCartEntity = new CartEntity();
+        mockCartEntity.setId(1L);
+        Set<ItemEntity> itemEntitySet = new HashSet<>();
+        itemEntitySet.add(new ItemEntity(1L,"P1002","IPhone","Cellphone",1,new BigDecimal("300.0"),new BigDecimal("300.0")));
+        mockCartEntity.setItems(itemEntitySet);
+        mockCartEntity.setTotalPrice(new BigDecimal("300.0"));
+        Mockito.when(cartRepository.findById(Mockito.any()))
+                .thenReturn(Optional.of(mockCartEntity));
+        Mockito.when(cartRepository.save(Mockito.any()))
+                .thenReturn(mockCartEntity);
+        CartDto cartDto = cartService.removeItemToCart(1L, 1L);
+        Assertions.assertEquals(cartDto.getId(),1L);
+        Assertions.assertEquals(cartDto.getItems().size(),0L);
     }
 
 }

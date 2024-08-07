@@ -9,7 +9,6 @@ import com.factura.shoppingcart.model.entity.ItemEntity;
 import com.factura.shoppingcart.repository.CartRepository;
 import com.factura.shoppingcart.service.CartService;
 import com.factura.shoppingcart.util.MapperUtil;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 

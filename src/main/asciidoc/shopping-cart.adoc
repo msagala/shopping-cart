@@ -38,6 +38,10 @@ $ java -jar target/*.jar
 
 = Shopping Cart Services
 
+Shopping Cart service process the creation of the cart that you can use to add, update or delete items on it.
+
+Note: The services below are secured and it is using Basic Authentication. Please check the "Authorization" value presented in the headers of the request. You can use that for testing purpose only. Production credentials will be different from that one.
+
 === Add items to new cart API
 It is use to add items in the cart. We can add items even without an existing cart to use, it will initially create a cart if your cart_id field is null.
 
@@ -69,3 +73,11 @@ Success Request
 include::{snippets}/delete-item-in-cart/http-request.adoc[]
 Success Response
 include::{snippets}/delete-item-in-cart/http-response.adoc[]
+
+=== Get cart items
+It is used to get the cart and the items on it. Will respond "Cart not found!" if no cart searched in the API.
+
+Success Request
+include::{snippets}/get-cart-id/http-request.adoc[]
+Success Response
+include::{snippets}/get-cart-id/http-response.adoc[]

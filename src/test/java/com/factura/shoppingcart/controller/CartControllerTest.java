@@ -1,6 +1,7 @@
 package com.factura.shoppingcart.controller;
 
 import com.factura.shoppingcart.config.JsonConfiguration;
+import com.factura.shoppingcart.config.SecurityConfig;
 import com.factura.shoppingcart.constant.StatusEnum;
 import com.factura.shoppingcart.model.dto.CartDto;
 import com.factura.shoppingcart.model.dto.ItemDto;
@@ -28,7 +29,7 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(CartController.class)
-@Import(value = { JsonConfiguration.class })
+@Import(value = { JsonConfiguration.class, SecurityConfig.class})
 @AutoConfigureRestDocs
 public class CartControllerTest {
 
@@ -36,6 +37,8 @@ public class CartControllerTest {
     private MockMvc mockMvc;
     @MockBean
     private CartService cartService;
+
+    private final String basicAuth = "Basic dXNlcjpQQHNzdzByZA==";
 
     @Test
     public void testGetCartByIdSuccess() throws Exception {
@@ -48,10 +51,12 @@ public class CartControllerTest {
         itemEntitySet.add(new ItemEntity(2L,"P1003","Samsung","Cellphone",1,new BigDecimal("200.0"),null));
         itemEntitySet.add(new ItemEntity(3L,"P1004","Nokia","Cellphone",1,new BigDecimal("100.0"), null));
         cartDto.setItems(itemEntitySet);
+        cartDto.setTotalPrice(new BigDecimal("600.0"));
         cartDtoBaseResponseDto.setData(cartDto);
         Mockito.when(cartService.getCartItemsById(Mockito.anyLong()))
                 .thenReturn(cartDto);
-        this.mockMvc.perform(get("/api/shopping-cart/carts/{id}", 1L))
+        this.mockMvc.perform(get("/api/shopping-cart/carts/{id}", 1L)
+                        .header("Authorization",basicAuth))
                 .andDo(document( "get-cart-id",
                         Preprocessors.preprocessRequest( Preprocessors.prettyPrint() ),
                         Preprocessors.preprocessResponse( Preprocessors.prettyPrint() )))
@@ -73,12 +78,14 @@ public class CartControllerTest {
         cartDto.setId(1L);
         Set<ItemEntity> itemEntitySet = new HashSet<>();
         itemEntitySet.add(new ItemEntity(1L,"P10020","IPhone","Cellphone",2,new BigDecimal("5000.0"),new BigDecimal("10000.0")));
+        cartDto.setTotalPrice(new BigDecimal("10000.0"));
         cartDto.setItems(itemEntitySet);
 
         Mockito.when(cartService.addItemToCart(Mockito.any(), Mockito.any()))
                 .thenReturn(cartDto);
 
         this.mockMvc.perform(post("/api/shopping-cart/carts")
+                        .header("Authorization",basicAuth)
                         .content(MapperUtil.objectToJson(itemDto))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(document( "add-item-in-new-cart",
@@ -111,6 +118,7 @@ public class CartControllerTest {
                 .thenReturn(cartDto);
 
         this.mockMvc.perform(post("/api/shopping-cart/carts")
+                        .header("Authorization",basicAuth)
                         .content(MapperUtil.objectToJson(itemDto))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(document( "add-item-in-existing-cart",
@@ -143,6 +151,7 @@ public class CartControllerTest {
                 .thenReturn(cartDto);
 
         this.mockMvc.perform(put("/api/shopping-cart/carts")
+                        .header("Authorization",basicAuth)
                         .content(MapperUtil.objectToJson(itemDto))
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(document( "update-item-in-cart",
@@ -166,6 +175,7 @@ public class CartControllerTest {
                 .thenReturn(cartDto);
 
         this.mockMvc.perform(delete("/api/shopping-cart/carts/{cartId}/item/{itemId}", 1L, 2L)
+                        .header("Authorization",basicAuth)
                         .contentType(MediaType.APPLICATION_JSON_VALUE))
                 .andDo(document( "delete-item-in-cart",
                         Preprocessors.preprocessRequest( Preprocessors.prettyPrint() ),
