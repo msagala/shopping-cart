@@ -42,39 +42,67 @@ Shopping Cart service process the creation of the cart that you can use to add, 
 
 Note: The services below are secured and it is using Basic Authentication. Please check the "Authorization" value presented in the headers of the request. You can use that for testing purpose only. Production credentials will be different from that one.
 
-=== Add items to new cart API
+== Add items to new cart API
 It is use to add items in the cart. We can add items even without an existing cart to use, it will initially create a cart if your cart_id field is null.
 
+==== Success Scenario
 Success Request
 include::{snippets}/add-item-in-new-cart/http-request.adoc[]
 Success Response
 include::{snippets}/add-item-in-new-cart/http-response.adoc[]
 
-=== Add items to an existing cart API
-It is a use case where you will add an item to an existing cart, you need to input a cart_id to use that cart to add the new item or update the quantity of an existing item. If no cart found, it will return an error "Cart not found!".
+==== Failed Scenario
+Error Request
+include::{snippets}/add-item-bad-request/http-request.adoc[]
+Error Response
+include::{snippets}/add-item-bad-request/http-response.adoc[]
 
+
+== Add items to an existing cart API
+It is a use case where you will add an item to an existing cart, you need to input a cart_id to use that cart to add the new item or update the quantity of an existing item. If no cart found, it will return an error "Cart not found!". You need to have different item_code to add new item or else it will add the quantity to the existing item code.
+
+==== Success Scenario
 Success Request
 include::{snippets}/add-item-in-existing-cart/http-request.adoc[]
 Success Response
 include::{snippets}/add-item-in-existing-cart/http-response.adoc[]
 
-=== Update item in the cart
+==== Failed Scenario
+Error Request
+include::{snippets}/add-item-bad-request/http-request.adoc[]
+Error Response
+include::{snippets}/add-item-bad-request/http-response.adoc[]
+
+== Update item in the cart
 It is used to update the items inside the cart. The success response will traverse all the items and the updated one in the cart.
 
+==== Success Scenario
 Success Request
 include::{snippets}/update-item-in-cart/http-request.adoc[]
 Success Response
 include::{snippets}/update-item-in-cart/http-response.adoc[]
 
-=== Remove item in the cart
+==== Failed Scenario
+include::{snippets}/update-item-bad-request/http-request.adoc[]
+Error Response
+include::{snippets}/update-item-bad-request/http-response.adoc[]
+
+== Remove item in the cart
 It is used to remove an item in the cart using cart_id and item_id. If no cart found, it will respond "Cart not found!" and if no item found, it will response "Item not found!". The success response will traverse the remaining items in the cart.
 
+==== Success Scenario
 Success Request
 include::{snippets}/delete-item-in-cart/http-request.adoc[]
 Success Response
 include::{snippets}/delete-item-in-cart/http-response.adoc[]
 
-=== Get cart items
+==== Failed Scenario
+Error Request
+include::{snippets}/delete-item-cart-not-found/http-request.adoc[]
+Error Response
+include::{snippets}/delete-item-cart-not-found/http-response.adoc[]
+
+== Get cart items
 It is used to get the cart and the items on it. Will respond "Cart not found!" if no cart searched in the API.
 
 Success Request

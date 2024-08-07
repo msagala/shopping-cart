@@ -72,7 +72,7 @@ public class CartServiceTest {
     }
 
     @Test
-    public void updateItemInCart() throws CartNotFoundException {
+    public void updateItemInCart() throws CartNotFoundException, ItemNotFoundException {
         CartEntity mockCartEntity = new CartEntity();
         mockCartEntity.setId(1L);
         Set<ItemEntity> itemEntitySet = new HashSet<>();

@@ -94,13 +94,14 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public CartDto updateItemToCart(Long cartId, ItemDto itemDto) throws CartNotFoundException {
+    public CartDto updateItemToCart(Long cartId, ItemDto itemDto) throws CartNotFoundException, ItemNotFoundException {
         log.info("Updating item to cart Id number: {}", cartId);
         log.info("ItemDTO: {}", MapperUtil.objectToJson(itemDto));
         ItemEntity item = mapCartDtoToItemEntity(itemDto);
         Optional<CartEntity> cartEntityOptional = cartRepository.findById(cartId);
         if(cartEntityOptional.isPresent()) {
             CartEntity cartEntity = cartEntityOptional.get();
+            AtomicBoolean atomicBoolean = new AtomicBoolean(true);
             cartEntity.getItems().stream().filter(itemStream -> itemStream.getItemCode().equals(item.getItemCode()))
                     .findAny().ifPresent(itemStream -> {
                         cartEntity.setTotalPrice(cartEntity.getTotalPrice().subtract(itemStream.getTotalPrice()));
@@ -111,7 +112,11 @@ public class CartServiceImpl implements CartService {
                         itemStream.setTotalPrice(itemStream.getPrice()
                                 .multiply(BigDecimal.valueOf(itemStream.getQuantity())));
                         cartEntity.setTotalPrice(cartEntity.getTotalPrice().add(itemStream.getTotalPrice()));
+                        atomicBoolean.set(false);
                     });
+            if(atomicBoolean.get()) {
+                throw new ItemNotFoundException();
+            }
             CartDto cartDto = mapCartEntityToCartDTO(cartRepository.save(cartEntity));
             log.info("Cart updated: {}", MapperUtil.objectToJson(cartDto));
             return mapCartEntityToCartDTO(cartRepository.save(cartEntity));
@@ -138,8 +143,8 @@ public class CartServiceImpl implements CartService {
     }
 
     @Override
-    public void removeCartById(long cartId) {
-
+    public void removeCartById(long cartId) throws CartNotFoundException {
+        cartRepository.delete(cartRepository.findById(cartId).orElseThrow(() -> new CartNotFoundException()));
     }
 
     private BigDecimal getTotalAmountByCart(CartEntity cartEntity) {

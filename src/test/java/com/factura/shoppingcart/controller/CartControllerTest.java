@@ -185,6 +185,65 @@ public class CartControllerTest {
 
     }
 
+    @Test
+    public void testAddItemsWithBadRequestResponse() throws Exception {
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setCartId(null);
+        itemDto.setItemCode("");
+        itemDto.setItemCategory("Cellphone");
+        itemDto.setItemName("IPhone");
+        itemDto.setItemPrice(new BigDecimal("5000.0"));
+        itemDto.setItemQuantity(2);
+
+
+        this.mockMvc.perform(post("/api/shopping-cart/carts")
+                        .header("Authorization",basicAuth)
+                        .content(MapperUtil.objectToJson(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(document( "add-item-bad-request",
+                        Preprocessors.preprocessRequest( Preprocessors.prettyPrint() ),
+                        Preprocessors.preprocessResponse( Preprocessors.prettyPrint() )))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void testUpdateItemsWithBadRequestResponse() throws Exception {
+
+        ItemDto itemDto = new ItemDto();
+        itemDto.setCartId(1L);
+        itemDto.setItemCode("");
+        itemDto.setItemCategory("Cellphone");
+        itemDto.setItemName("IPhone");
+        itemDto.setItemPrice(new BigDecimal("5000.0"));
+        itemDto.setItemQuantity(2);
+
+
+        this.mockMvc.perform(put("/api/shopping-cart/carts")
+                        .header("Authorization",basicAuth)
+                        .content(MapperUtil.objectToJson(itemDto))
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(document( "update-item-bad-request",
+                        Preprocessors.preprocessRequest( Preprocessors.prettyPrint() ),
+                        Preprocessors.preprocessResponse( Preprocessors.prettyPrint() )))
+                .andExpect(status().isBadRequest());
+
+    }
+
+    @Test
+    public void testRemoveItemsWithCartNotFound() throws Exception {
+
+        this.mockMvc.perform(delete("/api/shopping-cart/carts/1/2")
+                        .header("Authorization",basicAuth)
+                        .contentType(MediaType.APPLICATION_JSON_VALUE))
+                .andDo(document( "delete-item-cart-not-found",
+                        Preprocessors.preprocessRequest( Preprocessors.prettyPrint() ),
+                        Preprocessors.preprocessResponse( Preprocessors.prettyPrint() )))
+                .andExpect(status().isNotFound());
+
+    }
+
 
 
 }
